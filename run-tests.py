@@ -187,9 +187,11 @@ def run_process(cmd, capture_output=True, text=True, encoding=None, errors=None)
         # POSIX: si on reçoit une string, exécuter via shell=False peut échouer,
         # donc passer la string au shell si nécessaire.
         if isinstance(cmd, (list, tuple)):
+            cmd[0] = cmd[0].replace(".bat", "")
             cmd[0] = "./"+cmd[0] if os.path.exists("./"+cmd[0]) else cmd[0]
             return subprocess.run(list(cmd), capture_output=capture_output, text=text, encoding=encoding, errors=errors)
         else:
+            cmd = cmd.replace(".bat", "")
             cmd = "./"+cmd if os.path.exists("./"+cmd) else cmd
             return subprocess.run(cmd, capture_output=capture_output, text=text, encoding=encoding, errors=errors, shell=True)
 
