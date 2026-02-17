@@ -100,14 +100,30 @@ def check_dependencies_for_gradle():
     if os.path.exists(gradlewbat) or os.path.exists(gradlew):
         wrapper = gradlewbat if os.path.exists(gradlewbat) else gradlew
         print(MSG_WRAPPER_DETECTED.format(wrapper=wrapper))
-        wrapper_check = run_process([wrapper, "--version"]) if os.path.exists(wrapper) else run_process(["./" + wrapper, "--version"]) 
-        if wrapper_check.returncode != 0:
+        try:
+            wrapper_check = run_process([wrapper, "--version"]) if os.path.exists(wrapper) else run_process(["./" + wrapper, "--version"]) 
+            if wrapper_check.returncode != 0:
+                print(MSG_WRAPPER_FAIL.format(wrapper=wrapper))
+                if wrapper_check.stderr:
+                    print(wrapper_check.stderr)
+                return False
+            print("✅ Wrapper Gradle fonctionnel.")
+            return True
+        except Exception as e:
             print(MSG_WRAPPER_FAIL.format(wrapper=wrapper))
-            if wrapper_check.stderr:
-                print(wrapper_check.stderr)
-            return False
-        print("✅ Wrapper Gradle fonctionnel.")
-        return True
+            print(f"Exception: {e}")
+            wrapper = gradlew
+            try:
+                wrapper_check = run_process([wrapper, "--version"]) if os.path.exists(wrapper) else run_process(["./" + wrapper, "--version"]) 
+                if wrapper_check.returncode != 0:
+                    print(MSG_WRAPPER_FAIL.format(wrapper=wrapper))
+                    if wrapper_check.stderr:
+                        print(wrapper_check.stderr)
+                    return False
+                print("✅ Wrapper Gradle fonctionnel.")
+                return True
+            except Exception as e:
+                return False
 
     # Sinon vérifier installation globale de gradle
     gradle_check = run_process(CMD_GRADLE_VERSION)
