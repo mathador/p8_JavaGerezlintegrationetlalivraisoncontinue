@@ -59,7 +59,8 @@ def check_dependencies_for_npm():
     # Vérifier que node_modules existe, sinon l'installer
     if not os.path.exists("node_modules"):
         print("⚠️ node_modules non trouvé. Installation des dépendances...")
-        install = run_process(CMD_NPM_INSTALL, capture_output=True, text=True, encoding='utf-8', errors='replace')
+        install = run_process(CMD_NPM_INSTALL, capture_output=True,
+                              text=True, encoding='utf-8', errors='replace')
         if install.returncode != 0:
             print("❌ Erreur lors de l'installation des dépendances!")
             print(install.stderr)
@@ -83,7 +84,8 @@ def check_dependencies_for_gradle():
             print(java_check.stderr)
         return False
     # java -version écrit souvent sur stderr
-    java_version = (java_check.stdout or java_check.stderr or "").strip().splitlines()[0]
+    java_version = (
+        java_check.stdout or java_check.stderr or "").strip().splitlines()[0]
     print(f"✅ Java détecté: {java_version}")
 
     # Vérifier que javac est installé (JDK)
@@ -91,17 +93,19 @@ def check_dependencies_for_gradle():
     if javac_check.returncode != 0:
         print("⚠️ `javac` non trouvé — assurez-vous d'avoir un JDK (pas seulement un JRE).")
     else:
-        javac_version = (javac_check.stdout or javac_check.stderr or "").strip().splitlines()[0]
+        javac_version = (
+            javac_check.stdout or javac_check.stderr or "").strip().splitlines()[0]
         print(f"✅ Javac détecté: {javac_version}")
 
     # Préférer le wrapper Gradle si présent
     gradlew = "gradlew"
     gradlewbat = f"{gradlew}.bat"
-    if os.path.exists(gradlew) or os.path.exists("./" + gradlew):
+    if os.path.exists(gradlew) or os.path.exists(gradlewbat):
         wrapper = gradlew if os.path.exists(gradlew) else gradlewbat
         print(MSG_WRAPPER_DETECTED.format(wrapper=wrapper))
         try:
-            wrapper_check = run_process([wrapper, "--version"]) if os.path.exists(wrapper) else run_process(["./" + wrapper, "--version"]) 
+            wrapper_check = run_process([wrapper, "--version"]) if os.path.exists(
+                wrapper) else run_process(["./" + wrapper, "--version"])
             if wrapper_check.returncode != 0:
                 print(MSG_WRAPPER_FAIL.format(wrapper=wrapper))
                 if wrapper_check.stderr:
@@ -114,7 +118,8 @@ def check_dependencies_for_gradle():
             print(f"Exception: {e}")
             wrapper = gradlew
             try:
-                wrapper_check = run_process([wrapper, "--version"]) if os.path.exists(wrapper) else run_process(["./" + wrapper, "--version"]) 
+                wrapper_check = run_process([wrapper, "--version"]) if os.path.exists(
+                    wrapper) else run_process(["./" + wrapper, "--version"])
                 if wrapper_check.returncode != 0:
                     print(MSG_WRAPPER_FAIL.format(wrapper=wrapper))
                     if wrapper_check.stderr:
@@ -133,7 +138,8 @@ def check_dependencies_for_gradle():
             print(gradle_check.stderr)
         return False
 
-    gradle_version = (gradle_check.stdout or gradle_check.stderr or "").strip().splitlines()[0]
+    gradle_version = (
+        gradle_check.stdout or gradle_check.stderr or "").strip().splitlines()[0]
     print(f"✅ Gradle détecté: {gradle_version}")
     return True
 
@@ -181,8 +187,10 @@ def run_process(cmd, capture_output=True, text=True, encoding=None, errors=None)
         # POSIX: si on reçoit une string, exécuter via shell=False peut échouer,
         # donc passer la string au shell si nécessaire.
         if isinstance(cmd, (list, tuple)):
+            cmd[0] = "./"+cmd[0] if os.path.exists("./"+cmd[0]) else cmd[0]
             return subprocess.run(list(cmd), capture_output=capture_output, text=text, encoding=encoding, errors=errors)
         else:
+            cmd = "./"+cmd if os.path.exists("./"+cmd) else cmd
             return subprocess.run(cmd, capture_output=capture_output, text=text, encoding=encoding, errors=errors, shell=True)
 
 
