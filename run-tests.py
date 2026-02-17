@@ -97,8 +97,8 @@ def check_dependencies_for_gradle():
     # Préférer le wrapper Gradle si présent
     gradlew = "gradlew"
     gradlewbat = f"{gradlew}.bat"
-    if os.path.exists(gradlewbat) or os.path.exists(gradlew):
-        wrapper = gradlewbat if os.path.exists(gradlewbat) else gradlew
+    if os.path.exists(gradlew) or os.path.exists("./" + gradlew):
+        wrapper = gradlew if os.path.exists(gradlew) else gradlewbat
         print(MSG_WRAPPER_DETECTED.format(wrapper=wrapper))
         try:
             wrapper_check = run_process([wrapper, "--version"]) if os.path.exists(wrapper) else run_process(["./" + wrapper, "--version"]) 
