@@ -103,32 +103,15 @@ def check_dependencies_for_gradle():
     if os.path.exists(gradlew) or os.path.exists(gradlewbat):
         wrapper = gradlew if os.path.exists(gradlew) else gradlewbat
         print(MSG_WRAPPER_DETECTED.format(wrapper=wrapper))
-        try:
-            wrapper_check = run_process([wrapper, "--version"]) if os.path.exists(
-                wrapper) else run_process(["./" + wrapper, "--version"])
-            if wrapper_check.returncode != 0:
-                print(MSG_WRAPPER_FAIL.format(wrapper=wrapper))
-                if wrapper_check.stderr:
-                    print(wrapper_check.stderr)
-                return False
-            print("✅ Wrapper Gradle fonctionnel.")
-            return True
-        except Exception as e:
+        wrapper_check = run_process([wrapper, "--version"]) if os.path.exists(
+            wrapper) else run_process(["./" + wrapper, "--version"])
+        if wrapper_check.returncode != 0:
             print(MSG_WRAPPER_FAIL.format(wrapper=wrapper))
-            print(f"Exception: {e}")
-            wrapper = gradlew
-            try:
-                wrapper_check = run_process([wrapper, "--version"]) if os.path.exists(
-                    wrapper) else run_process(["./" + wrapper, "--version"])
-                if wrapper_check.returncode != 0:
-                    print(MSG_WRAPPER_FAIL.format(wrapper=wrapper))
-                    if wrapper_check.stderr:
-                        print(wrapper_check.stderr)
-                    return False
-                print("✅ Wrapper Gradle fonctionnel.")
-                return True
-            except Exception as e:
-                return False
+            if wrapper_check.stderr:
+                print(wrapper_check.stderr)
+            return False
+        print("✅ Wrapper Gradle fonctionnel.")
+        return True
 
     # Sinon vérifier installation globale de gradle
     gradle_check = run_process(CMD_GRADLE_VERSION)
@@ -187,13 +170,25 @@ def run_process(cmd, capture_output=True, text=True, encoding=None, errors=None)
         # POSIX: si on reçoit une string, exécuter via shell=False peut échouer,
         # donc passer la string au shell si nécessaire.
         if isinstance(cmd, (list, tuple)):
-            cmd[0] = cmd[0].replace(".bat", "")
-            cmd[0] = "./"+cmd[0] if os.path.exists("./"+cmd[0]) else cmd[0]
+            cmd[0] = adapt_for_unix(cmd[0])
             return subprocess.run(list(cmd), capture_output=capture_output, text=text, encoding=encoding, errors=errors)
         else:
-            cmd = cmd.replace(".bat", "")
-            cmd = "./"+cmd if os.path.exists("./"+cmd) else cmd
+            cmd = adapt_for_unix(cmd)
             return subprocess.run(cmd, capture_output=capture_output, text=text, encoding=encoding, errors=errors, shell=True)
+
+
+def adapt_for_unix(cmd):
+    """Adapte une commande Windows (contenant .bat) à la plateforme POSIX.
+
+    Args:
+        cmd (_type_): cmd est une commande qui peut être un exécutable Windows (ex: gradlew.bat)
+
+    Returns:
+        _type_: cmd adapté pour être exécuté sur POSIX (ex: ./gradlew) si le fichier existe, sinon cmd inchangé
+    """
+    cmd = cmd.replace(".bat", "")
+    cmd = "./"+cmd if os.path.exists("./"+cmd) else cmd
+    return cmd
 
 
 def first_output_line(proc_result):

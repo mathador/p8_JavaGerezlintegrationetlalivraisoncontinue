@@ -1,6 +1,6 @@
 name: CI
 
-# Déclencheurs: push et pull_request sur les branches ciblées
+# Déclencheurs: sur les évenements push et pull_request sur les branches ciblées
 on:
   push:
     branches: [ main, exercice2_etape2 ]
@@ -8,6 +8,7 @@ on:
     branches: [ main, exercice2_etape2 ]
 
 jobs:
+  # Pour l'instant 2 jobs : build et test
   build:
     # Exécute le job sur un runner Ubuntu récent
     runs-on: ubuntu-latest
