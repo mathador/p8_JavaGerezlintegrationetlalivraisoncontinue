@@ -80,3 +80,10 @@ jobs:
 
       - name: Run tests script
         run: python run-tests.py
+
+      - name: Publish Test Report
+        uses: EnricoMi/publish-unit-test-result-action@v2
+        if: always()   # exécuter même si les tests échouent
+        with:
+          files: |
+            build/test-results/test/TEST-fr.oc.devops.backend.services.NotionServiceTest.xml
