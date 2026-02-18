@@ -89,5 +89,4 @@ jobs:
         if: always()   # exécuter même si les tests échouent
         with:
           files: |
-            build/test-results/test/TEST-fr.oc.devops.backend.services.NotionServiceTest.xml
-            build/test-results/test/TEST-fr.oc.devops.backend.services.TaskServiceTest.xml
+            build/test-results/test/**/*.xml
