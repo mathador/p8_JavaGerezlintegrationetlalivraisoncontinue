@@ -19,6 +19,7 @@ jobs:
 
       # Installe le JDK requis (Temurin 21)
       - name: Set up JDK 21
+        if: hashFiles('**/build.gradle*') != ''
         uses: actions/setup-java@v4
         with:
           distribution: 'temurin'
@@ -26,6 +27,7 @@ jobs:
 
       # Met en cache les fichiers Gradle pour accélérer les builds
       - name: Cache Gradle
+        if: hashFiles('**/build.gradle*') != ''
         uses: actions/cache@v4
         with:
           path: |
@@ -37,11 +39,26 @@ jobs:
 
       # Assure l'exécution du wrapper Gradle sous Linux
       - name: Ensure Gradle wrapper is executable
+        if: hashFiles('**/build.gradle*') != ''
         run: chmod +x ./gradlew
 
       # Lance la compilation et les tests via Gradle
       - name: Build with Gradle
+        if: hashFiles('**/build.gradle*') != ''
         run: ./gradlew build --no-daemon
+
+      # Angular
+      - name: Set up Node.js
+        if: hashFiles('**/angular.json') != ''
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Build Angular
+        if: hashFiles('**/angular.json') != ''
+        run: |
+          npm install
+          npx ng build
 
       # Téléverse les artefacts de build (si succès)
       - name: Upload build artifacts
@@ -90,3 +107,4 @@ jobs:
         with:
           files: |
             build/test-results/test/**/*.xml
+            test-results/**/*.xml
