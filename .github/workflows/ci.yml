@@ -52,7 +52,7 @@ jobs:
         if: hashFiles('**/angular.json') != ''
         uses: actions/setup-node@v4
         with:
-          node-version: '20'
+          node-version: '24'
 
       - name: Build Angular
         if: hashFiles('**/angular.json') != ''
@@ -60,30 +60,15 @@ jobs:
           npm install
           npx ng build
 
-      # Téléverse les artefacts de build (si succès)
-      - name: Upload build artifacts
-        if: success()
-        uses: actions/upload-artifact@v4
-        with:
-          name: Package
-          path: build/libs
-
   test:
-    # Job de test séparé — dépend du job `build`
+    # Job de test séparé
     runs-on: ubuntu-latest
-    needs: build
     permissions:
       checks: write
       contents: read
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-
-      - name: Download build artifacts
-        uses: actions/download-artifact@v4
-        with:
-          name: Package
-          path: build/libs
 
       - name: Set up Python
         uses: actions/setup-python@v4
