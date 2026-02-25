@@ -12,6 +12,10 @@ services:
       SPRING_DATASOURCE_USERNAME: workshops_user
       SPRING_DATASOURCE_PASSWORD: oc2026
       SPRING_JPA_HIBERNATE_DDL_AUTO: validate
+      POSTGRES_HOST: db
+      POSTGRES_PORT: "5432"
+      POSTGRES_USER: workshops_user
+      POSTGRES_DB: workshopsdb
     depends_on:
       db:
         condition: service_healthy

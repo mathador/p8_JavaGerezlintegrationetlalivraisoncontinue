@@ -2,12 +2,10 @@
 set -e
 
 # Variables d'environnement (définies dans docker-compose.yml)
-POSTGRES_HOST="${SPRING_DATASOURCE_URL#*://}"
-POSTGRES_HOST="${POSTGRES_HOST%%:*}"
-POSTGRES_PORT="${SPRING_DATASOURCE_URL#*:}"
-POSTGRES_PORT="${POSTGRES_PORT%%/*}"
-POSTGRES_USER="${SPRING_DATASOURCE_USERNAME}"
-POSTGRES_DB="${SPRING_DATASOURCE_URL##*/}"
+POSTGRES_HOST="${POSTGRES_HOST:-db}"
+POSTGRES_PORT="${POSTGRES_PORT:-5432}"
+POSTGRES_USER="${POSTGRES_USER:-workshops_user}"
+POSTGRES_DB="${POSTGRES_DB:-workshopsdb}"
 
 echo "Attente de disponibilité de PostgreSQL sur ${POSTGRES_HOST}:${POSTGRES_PORT}..."
 
