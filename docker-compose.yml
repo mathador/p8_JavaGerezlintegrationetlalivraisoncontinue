@@ -16,6 +16,8 @@ services:
       db:
         condition: service_healthy
     restart: on-failure
+    networks:
+      - app-network
     healthcheck:
       test: ["CMD-SHELL", "curl -f http://localhost:8080/ >/dev/null 2>&1 && pg_isready -h db -p 5432 -U workshops_user -d workshopsdb >/dev/null 2>&1"]
       interval: 10s
@@ -33,6 +35,8 @@ services:
       POSTGRES_DB: workshopsdb
     volumes:
       - postgres_data:/var/lib/postgresql/data
+    networks:
+      - app-network
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U workshops_user -d workshopsdb"]
       interval: 10s
@@ -41,3 +45,7 @@ services:
 
 volumes:
   postgres_data:
+
+networks:
+  app-network:
+    driver: bridge

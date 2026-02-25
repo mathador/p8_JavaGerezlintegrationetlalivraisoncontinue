@@ -1,14 +1,37 @@
 #!/bin/sh
 set -e
 
+# Variables d'environnement (définies dans docker-compose.yml)
+POSTGRES_HOST="${SPRING_DATASOURCE_URL#*://}"
+POSTGRES_HOST="${POSTGRES_HOST%%:*}"
+POSTGRES_PORT="${SPRING_DATASOURCE_URL#*:}"
+POSTGRES_PORT="${POSTGRES_PORT%%/*}"
+POSTGRES_USER="${SPRING_DATASOURCE_USERNAME}"
+POSTGRES_DB="${SPRING_DATASOURCE_URL##*/}"
+
+echo "Attente de disponibilité de PostgreSQL sur ${POSTGRES_HOST}:${POSTGRES_PORT}..."
+
 # Attendre que la base PostgreSQL soit disponible
-echo "Attente de disponibilité de PostgreSQL..."
-while ! pg_isready -h "$POSTGRES_HOST" -p "$POSTGRES_PORT" -U "$POSTGRES_USER" -d "$POSTGRES_DB"; do
-  echo "PostgreSQL n'est pas encore disponible, nouvelle tentative dans 2 secondes..."
+max_attempts=30
+attempt=1
+while [ $attempt -le $max_attempts ]; do
+  if pg_isready -h "$POSTGRES_HOST" -p "$POSTGRES_PORT" -U "$POSTGRES_USER"; then
+    echo "PostgreSQL est maintenant disponible!"
+    break
+  fi
+  
+  if [ $attempt -eq $max_attempts ]; then
+    echo "Timeout: PostgreSQL n'a pas répondu après $max_attempts tentatives"
+    exit 1
+  fi
+  
+  echo "PostgreSQL n'est pas encore disponible (tentative $attempt/$max_attempts)..."
   sleep 2
+  attempt=$((attempt + 1))
 done
 
-echo "PostgreSQL est maintenant disponible! Démarrage de l'application..."
+echo "Démarrage de l'application..."
 
 # Lancer l'application
 exec java -jar app.jar
+
