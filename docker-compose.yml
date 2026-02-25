@@ -11,6 +11,7 @@ services:
       SPRING_DATASOURCE_URL: "jdbc:postgresql://db:5432/workshopsdb"
       SPRING_DATASOURCE_USERNAME: workshops_user
       SPRING_DATASOURCE_PASSWORD: oc2026
+      SPRING_JPA_HIBERNATE_DDL_AUTO: validate
     depends_on:
       db:
         condition: service_healthy
