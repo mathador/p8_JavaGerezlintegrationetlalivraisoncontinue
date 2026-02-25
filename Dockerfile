@@ -17,16 +17,15 @@ COPY db db/
 # Compiler l'application avec Gradle
 RUN gradle build -x test --no-daemon
 
-# Étape 2 : Runtime - Image légère pour exécution
+# Étape 2 : Runtime
 FROM eclipse-temurin:21-jre-alpine
 
 WORKDIR /app
 
-# Copier le JAR compilé depuis l'étape builder
+RUN apk add --no-cache postgresql-client
+
 COPY --from=builder /build/build/libs/workshop-organizer-*.jar app.jar
 
-# Exposer le port
 EXPOSE 8080
 
-# Commande de démarrage
 ENTRYPOINT ["java", "-jar", "app.jar"]
