@@ -22,6 +22,7 @@ FROM eclipse-temurin:21-jre-alpine
 
 WORKDIR /app
 
+# Installer le client PostgreSQL pour permettre les checks depuis le conteneur
 RUN apk add --no-cache postgresql-client
 
 COPY --from=builder /build/build/libs/workshop-organizer-*.jar app.jar
