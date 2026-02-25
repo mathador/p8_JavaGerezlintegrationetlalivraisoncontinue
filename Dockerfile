@@ -25,8 +25,18 @@ WORKDIR /app
 # Installer le client PostgreSQL pour permettre les checks depuis le conteneur
 RUN apk add --no-cache postgresql-client
 
+# Copier l'entrypoint script
+COPY entrypoint.sh /app/entrypoint.sh
+RUN chmod +x /app/entrypoint.sh
+
 COPY --from=builder /build/build/libs/workshop-organizer-*.jar app.jar
 
 EXPOSE 8080
 
-ENTRYPOINT ["java", "-jar", "app.jar"]
+# Variables d'environnement par défaut pour le script d'entrypoint
+ENV POSTGRES_HOST=db \
+    POSTGRES_PORT=5432 \
+    POSTGRES_USER=workshops_user \
+    POSTGRES_DB=workshopsdb
+
+ENTRYPOINT ["/app/entrypoint.sh"]
