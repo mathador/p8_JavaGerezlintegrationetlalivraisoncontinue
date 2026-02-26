@@ -12,7 +12,7 @@ COPY settings.gradle .
 
 # Copier le code source
 COPY src src/
-COPY db db/
+# COPY db db/
 
 # Compiler l'application avec Gradle
 RUN gradle build -x test --no-daemon
