@@ -98,6 +98,7 @@ Feel free to enhance this README with additional details, such as API endpoints,
 
 Pour lancer le build ghcr
 
+renseignez le tag dans le fichier .env
 
 ```bash
 docker compose -p ghcrtest -f docker-compose.ghcr.yml up -d

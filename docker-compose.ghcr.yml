@@ -1,6 +1,6 @@
 services:
   app:
-    image: ghcr.io/mathador/p8_javagerezlintegrationetlalivraisoncontinue:test-10a27
+    image: ghcr.io/mathador/p8_javagerezlintegrationetlalivraisoncontinue:${IMAGE_TAG:-test-69e60}
     ports:
       - "8080:8080"
     environment:
