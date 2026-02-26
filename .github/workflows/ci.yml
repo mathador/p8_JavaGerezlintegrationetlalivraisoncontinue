@@ -110,7 +110,7 @@ jobs:
         # PostgreSQL service for final build/push steps
         services:
             postgres:
-                if: ${{ hashFiles('**/build.gradle*') != '' }}
+                # if: ${{ hashFiles('**/build.gradle*') != '' }}
                 image: postgres:13
                 env:
                     POSTGRES_USER: workshops_user
