@@ -107,6 +107,26 @@ jobs:
     publish:
         needs: [test]
         runs-on: ubuntu-latest
+        # PostgreSQL service for final build/push steps
+        services:
+            postgres:
+                if: ${{ hashFiles('**/build.gradle*') != '' }}
+                image: postgres:13
+                env:
+                    POSTGRES_USER: workshops_user
+                    POSTGRES_PASSWORD: oc2026
+                    POSTGRES_DB: workshopsdb
+                ports:
+                    - 5432:5432
+                options: >-
+                    --health-cmd "pg_isready -U workshops_user -d workshopsdb"
+                    --health-interval 10s
+                    --health-timeout 5s
+                    --health-retries 5
+        env:
+            SPRING_DATASOURCE_URL: jdbc:postgresql://localhost:5432/workshopsdb
+            SPRING_DATASOURCE_USERNAME: workshops_user
+            SPRING_DATASOURCE_PASSWORD: oc2026
         permissions:
             packages: write
             contents: read
