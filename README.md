@@ -94,3 +94,15 @@ To publish your application to a GitLab registry, follow these steps:
    Remember to replace placeholders with actual values specific to your project.
 
 Feel free to enhance this README with additional details, such as API endpoints, security considerations, and deployment instructions. Happy organizing! 🚀
+
+
+Pour lancer le build ghcr
+
+
+```bash
+docker compose -p ghcrtest -f docker-compose.ghcr.yml up -d
+```
+
+```bash
+docker compose -p ghcrtest -f docker-compose.ghcr.yml down -v
+```
